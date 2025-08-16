@@ -1,0 +1,133 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vital Aid | Login</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+      max-width: 400px;
+      margin: auto;
+      text-align: center;
+    }
+    .container {
+      background-color: #fff;
+      padding: 25px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .logo {
+      width: 90px;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      color: #007BFF;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #message {
+      margin-top: 10px;
+      color: #c00;
+    }
+
+    .create-account {
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
+    .create-account a {
+      color: #007BFF;
+      text-decoration: none;
+    }
+
+    .create-account a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="Vital (1).png" alt="Vital Aid Logo" class="logo" />
+    <h2>User Login</h2>
+
+    <input type="text" id="login-username" placeholder="Username" />
+    <input type="password" id="login-password" placeholder="Password" />
+    <button id="login-btn" onclick="logIn()">Log In</button>
+
+    <p id="message"></p>
+
+    <div class="create-account">
+      Don't have an account? <a href="signup.html">Create one</a>
+    </div>
+  </div>
+
+  <script>
+    let loginAttempts = 0;
+
+    function logIn() {
+      const username = document.getElementById("login-username").value.trim();
+      const password = document.getElementById("login-password").value;
+      const hashedInput = CryptoJS.SHA256(password).toString();
+      const message = document.getElementById("message");
+      const loginBtn = document.getElementById("login-btn");
+
+      if (loginAttempts >= 5) {
+        message.textContent = "Too many failed attempts. Please try again later.";
+        loginBtn.disabled = true;
+        return;
+      }
+
+      const stored = localStorage.getItem(username);
+      if (!stored) {
+        loginAttempts++;
+        message.textContent = "Login failed. Please try again.";
+        return;
+      }
+
+      const storedUser = JSON.parse(stored);
+      if (storedUser.password === hashedInput) {
+        message.style.color = "green";
+        message.textContent = `Welcome, ${storedUser.username}!`;
+        loginAttempts = 0;
+        setTimeout(() => {
+          window.location.href = "Home.html";
+        }, 1500);
+      } else {
+        loginAttempts++;
+        message.textContent = "Login failed. Please try again.";
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vital Aid | Sign Up</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            max-width: 400px;
+            margin: auto;
+            text-align: center;
+        }
+        .container {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .logo {
+            width: 90px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            margin-bottom: 20px;
+            color: #007BFF;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            background-color: #007BFF;  /* Blue button */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #message {
+            margin-top: 10px;
+            color: #c00;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="vital-aid-ai/Vital.jpg" alt="Vital Aid Logo" class="logo">
+        <h2>Create Account</h2>
+
+        <input type="text" id="signup-username" placeholder="Username">
+        <input type="password" id="signup-password" placeholder="Password (min. 8 characters)">
+        <button onclick="signUp()">Sign Up</button>
+
+        <p id="message"></p>
+    </div>
+
+    <script>
+        function signUp() {
+            const username = document.getElementById("signup-username").value.trim();
+            const password = document.getElementById("signup-password").value;
+            const message = document.getElementById("message");
+
+            // Validate input
+            if (username === "" || password.length < 8) {
+                message.textContent = "Username is required and password must be at least 8 characters.";
+                return;
+            }
+
+            // Check if account exists
+            if (localStorage.getItem(username)) {
+                message.textContent = "Username already taken. Please choose another.";
+                return;
+            }
+
+            // Hash and store
+            const hashedPassword = CryptoJS.SHA256(password).toString();
+            localStorage.setItem(username, JSON.stringify({ username, password: hashedPassword }));
+
+            // Success message and redirect
+            message.style.color = "green";
+            message.textContent = "Account created! Redirecting to home.html...";
+
+            setTimeout(() => {
+                window.location.href = "login.html";
+            }, 1500);
+        }
+    </script>
+</body>
+</html>

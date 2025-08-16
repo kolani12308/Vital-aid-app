@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vital Aid Home</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: url("vital-aid-ai/node_modules/back.png") no-repeat center center;
+      background-size: cover;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      background:fixed
+    }
+
+    .left {
+      display: flex;
+      align-items: center;
+    }
+
+    .left img {
+      width: 40px;
+      height: 40px;
+      margin-left: 0.5rem;
+    }
+
+    .options-button {
+      font-size: 1.5rem;
+      cursor: pointer;
+      margin-right: 0.5rem;
+    }
+
+    .right {
+      display: flex;
+      align-items: center;
+    }
+
+    .profile-pic {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #ddd;
+      cursor: pointer;
+    }
+
+    .button-bar {
+      display: flex;
+      justify-content: space-around;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.8);
+    }
+
+    .button-container {
+      text-align: center;
+    }
+
+    .button-container img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      display: block;
+      margin: 0 auto 0.5rem;
+    }
+
+    .button-container button {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 8px;
+      background-color: #f44336;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    /* side drawer */
+    .drawer {
+      position: fixed;
+      top: 0;
+      left: -250px;
+      width: 250px;
+      height: 100%;
+      background: #fff;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.3);
+      transition: left 0.3s ease;
+      padding: 1rem;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .drawer.open {
+      left: 0;
+    }
+
+    .drawer h2 {
+      margin-top: 0;
+      color: #f44336;
+    }
+
+    .drawer a {
+      display: block;
+      margin: 1rem 0;
+      color: #333;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .drawer .credentials {
+      background: #f5f5f5;
+      padding: 0.5rem;
+      border-radius: 5px;
+      font-size: 0.9rem;
+    }
+
+    .drawer .footer {
+      text-align: center;
+      font-size: 0.9rem;
+      padding: 0.5rem;
+      color: #888;
+    }
+
+    .drawer button.logout-btn {
+      margin-top: 1rem;
+      padding: 0.5rem;
+      background-color: #f44336;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right:0;
+      bottom:0;
+      background: rgba(0,0,0,0.3);
+      display: none;
+      z-index: 998;
+    }
+
+    .overlay.show {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <div class="top-bar">
+    <div class="left">
+      <span class="options-button" onclick="toggleDrawer()">&#9776;</span>
+      <img src="vital-aid-ai/Vital.jpg" alt="Vital Aid Logo">
+    </div>
+    <div class="right">
+      <img id="profilePic" src="default-profile.png" alt="Profile" class="profile-pic" onclick="triggerUpload()">
+      <input type="file" id="profileInput" accept="image/*" style="display: none;">
+    </div>
+  </div>
+
+  <!-- Side Drawer -->
+  <div class="drawer" id="drawer">
+    <div>
+      <h2>Options</h2>
+      <a href="https://wa.me/qr/XMVVBDDYKA36I1" target="_blank">Talk to Doctor</a>
+      <a href="https://wa.me/qr/XMVVBDDYKA36I1" target="_blank">Report Issue</a>
+      <div class="credentials">
+        <strong>User Profile</strong><br>
+        Username: user@example.com<br>
+        Phone: +123456789
+      </div>
+      <button class="logout-btn" onclick="logout()">Log Out</button>
+    </div>
+    <div class="footer">Kol_20</div>
+  </div>
+
+  <!-- Overlay -->
+  <div class="overlay" id="overlay" onclick="toggleDrawer()"></div>
+
+  <!-- Button Bar (at bottom) -->
+  <div class="button-bar">
+    <div class="button-container">
+      <a href="https://sites.google.com/view/vitalaid/Interface" target="_blank" style="text-decoration: none;">
+        <img src="vital-aid-ai/OIP.webp" alt="First Aid Icon">
+        <button>First Aid</button>
+      </a>
+    </div>
+    <div class="button-container">
+      <img src="vital-aid-ai/node_modules/FIELD-SL-12a-1024x683.jpg" alt="Nearest Pharmacy Icon">
+      <button onclick="getLocationAndSearchPharmacy()">Nearest Pharmacy</button>
+    </div>
+    <div class="button-container">
+      <a href="https://www.drugs.com/" target="_blank" style="text-decoration: none;">
+        <img src="vital-aid-ai/node_modules/download.webp" alt="Medications Icon">
+        <button>Medications</button>
+      </a>
+    </div>
+  </div>
+
+  <!-- Script -->
+  <script>
+    const drawer = document.getElementById("drawer");
+    const overlay = document.getElementById("overlay");
+    const profilePic = document.getElementById("profilePic");
+    const profileInput = document.getElementById("profileInput");
+
+    function toggleDrawer() {
+      drawer.classList.toggle("open");
+      overlay.classList.toggle("show");
+    }
+
+    function triggerUpload() {
+      profileInput.click();
+    }
+
+    profileInput.addEventListener("change", function () {
+      const file = this.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          profilePic.src = e.target.result;
+        }
+        reader.readAsDataURL(file);
+      }
+    });
+
+    function logout() {
+      window.location.href = "login.html"; // Replace with your actual login page
+    }
+
+    function getLocationAndSearchPharmacy() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          const mapsUrl = `https://www.google.com/maps/search/pharmacy/@${lat},${lon},15z`;
+          window.open(mapsUrl, "_blank");
+        }, function(error) {
+          alert("Location access denied or unavailable.");
+        });
+      } else {
+        alert("Geolocation is not supported by your browser.");
+      }
+    }
+  </script>
+</body>
+</html>
